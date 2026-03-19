@@ -58,15 +58,132 @@ export default function Home() {
           </div>
 
           {/* Hero Abstract Visual */}
-          <div className="mt-20 w-full max-w-5xl aspect-[21/9] bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden relative flex items-center justify-center shadow-sm">
-            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-            <div className="relative flex items-end gap-4 opacity-80">
-              <div className="w-24 h-32 border-2 border-zinc-900 bg-white rounded-sm shadow-sm"></div>
-              <div className="w-32 h-48 border-2 border-zinc-900 bg-white rounded-sm shadow-sm"></div>
-              <div className="w-24 h-24 border-2 border-zinc-900 bg-white rounded-sm shadow-sm"></div>
-              <div className="w-40 h-16 border-2 border-zinc-400 bg-zinc-100 rounded-sm border-dashed"></div>
+          <div className="mt-20 w-full max-w-5xl aspect-[21/9] bg-white border border-zinc-200 rounded-xl overflow-hidden relative flex items-center justify-center shadow-sm">
+            {/* Isometric Grid Background */}
+            <div className="absolute inset-0 opacity-[0.05]" style={{ 
+              backgroundImage: 'linear-gradient(30deg, #000 1px, transparent 1px), linear-gradient(150deg, #000 1px, transparent 1px)', 
+              backgroundSize: '40px 23px',
+              backgroundPosition: 'center center'
+            }}></div>
+            
+            <div className="relative z-10 w-full h-full flex items-center justify-center px-4 overflow-hidden">
+              <svg viewBox="0 0 900 300" className="w-full max-w-5xl h-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#a1a1aa" />
+                  </marker>
+                  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#f4f4f5" stopOpacity="0.4" />
+                  </linearGradient>
+                </defs>
+
+                {/* Step 1: Site Context */}
+                <g transform="translate(50, 180)">
+                  {/* Road */}
+                  <path d="M-20,20 L80,-30 L160,10 L60,60 Z" fill="#f4f4f5" stroke="#e4e4e7" strokeWidth="1"/>
+                  {/* Site Boundary */}
+                  <path d="M20,0 L80,-30 L140,0 L80,30 Z" stroke="#18181b" strokeWidth="2" strokeDasharray="4 4" fill="rgba(34, 197, 94, 0.05)"/>
+                  <circle cx="80" cy="0" r="3" fill="#18181b"/>
+                  {/* Context Tree (Abstract) */}
+                  <circle cx="130" cy="-10" r="8" fill="#dcfce7" stroke="#22c55e" strokeWidth="1"/>
+                  <circle cx="30" cy="10" r="6" fill="#dcfce7" stroke="#22c55e" strokeWidth="1"/>
+                  
+                  <text x="80" y="70" textAnchor="middle" fill="#52525b" fontSize="12" fontFamily="monospace" fontWeight="bold">01. SITE CONTEXT</text>
+                  <text x="80" y="90" textAnchor="middle" fill="#a1a1aa" fontSize="10">场地条件输入</text>
+                </g>
+
+                <path d="M 230 160 L 260 160" stroke="#a1a1aa" strokeWidth="2" markerEnd="url(#arrow)"/>
+
+                {/* Step 2: Max Volume */}
+                <g transform="translate(280, 180)">
+                  {/* Base Site */}
+                  <path d="M20,0 L80,-30 L140,0 L80,30 Z" stroke="#e4e4e7" strokeWidth="1" fill="none"/>
+                  {/* Extruded Volume */}
+                  {/* Front Left Face */}
+                  <path d="M20,0 L20,-60 L80,-90 L80,-30 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  {/* Front Right Face */}
+                  <path d="M140,0 L140,-60 L80,-90 L80,-30 Z" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  {/* Top Face */}
+                  <path d="M20,-60 L80,-90 L140,-60 L80,-30 Z" fill="url(#glass)" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  
+                  {/* Bounding Box Lines */}
+                  <path d="M20,-60 L20,-100 L80,-130 L140,-100 L140,-60" stroke="#a1a1aa" strokeWidth="1" strokeDasharray="2 2" fill="none"/>
+                  <path d="M80,-130 L80,-90" stroke="#a1a1aa" strokeWidth="1" strokeDasharray="2 2" fill="none"/>
+
+                  <text x="80" y="70" textAnchor="middle" fill="#52525b" fontSize="12" fontFamily="monospace" fontWeight="bold">02. MAX VOLUME</text>
+                  <text x="80" y="90" textAnchor="middle" fill="#a1a1aa" fontSize="10">最大体量生成</text>
+                </g>
+
+                <path d="M 460 160 L 490 160" stroke="#a1a1aa" strokeWidth="2" markerEnd="url(#arrow)"/>
+
+                {/* Step 3: Articulation (Cutting) */}
+                <g transform="translate(510, 180)">
+                  {/* Base Site */}
+                  <path d="M20,0 L80,-30 L140,0 L80,30 Z" stroke="#e4e4e7" strokeWidth="1" fill="none"/>
+                  
+                  {/* Left Wing */}
+                  <path d="M20,0 L20,-60 L50,-75 L50,-15 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M50,-15 L50,-75 L80,-60 L80,0 Z" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M20,-60 L50,-75 L80,-60 L50,-45 Z" fill="#ffffff" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  
+                  {/* Right Wing */}
+                  <path d="M80,0 L80,-60 L110,-75 L110,-15 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M140,0 L140,-60 L110,-75 L110,-15 Z" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M80,-60 L110,-75 L140,-60 L110,-45 Z" fill="#ffffff" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  
+                  {/* Connecting Bridge */}
+                  <path d="M50,-45 L50,-60 L110,-60 L110,-45 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M50,-60 L80,-75 L110,-60 L80,-45 Z" fill="#ffffff" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+
+                  {/* Cutout Indicator */}
+                  <path d="M80,-30 L80,-10 L110,5 L110,-15 Z" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2"/>
+                  <path d="M80,-10 L50,5 L50,-15 L80,-30 Z" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2"/>
+
+                  <text x="80" y="70" textAnchor="middle" fill="#52525b" fontSize="12" fontFamily="monospace" fontWeight="bold">03. ARTICULATION</text>
+                  <text x="80" y="90" textAnchor="middle" fill="#a1a1aa" fontSize="10">策略切分与变形</text>
+                </g>
+
+                <path d="M 690 160 L 720 160" stroke="#a1a1aa" strokeWidth="2" markerEnd="url(#arrow)"/>
+
+                {/* Step 4: Final Concept */}
+                <g transform="translate(740, 180)">
+                  {/* Base Site */}
+                  <path d="M20,0 L80,-30 L140,0 L80,30 Z" stroke="#e4e4e7" strokeWidth="1" fill="none"/>
+                  
+                  {/* Courtyard Greenery */}
+                  <path d="M80,-10 L50,5 L80,20 L110,5 Z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1"/>
+                  <circle cx="80" cy="5" r="4" fill="#22c55e"/>
+                  
+                  {/* Left Wing */}
+                  <path d="M20,0 L20,-60 L50,-75 L50,-15 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M50,-15 L50,-75 L80,-60 L80,0 Z" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M20,-60 L50,-75 L80,-60 L50,-45 Z" fill="#18181b" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  
+                  {/* Right Wing */}
+                  <path d="M80,0 L80,-60 L110,-75 L110,-15 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M140,0 L140,-60 L110,-75 L110,-15 Z" fill="#e4e4e7" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M80,-60 L110,-75 L140,-60 L110,-45 Z" fill="#18181b" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  
+                  {/* Connecting Bridge */}
+                  <path d="M50,-45 L50,-60 L110,-60 L110,-45 Z" fill="#f4f4f5" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M50,-60 L80,-75 L110,-60 L80,-45 Z" fill="#18181b" stroke="#18181b" strokeWidth="1.5" strokeLinejoin="round"/>
+
+                  {/* Windows / Details */}
+                  <path d="M30,-15 L30,-50 L40,-55 L40,-20 Z" fill="#ffffff" stroke="#a1a1aa" strokeWidth="0.5"/>
+                  <path d="M120,-15 L120,-50 L130,-55 L130,-20 Z" fill="#ffffff" stroke="#a1a1aa" strokeWidth="0.5"/>
+                  
+                  {/* Roof Garden */}
+                  <path d="M55,-50 L80,-62 L105,-50 L80,-38 Z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1"/>
+
+                  <text x="80" y="70" textAnchor="middle" fill="#18181b" fontSize="12" fontFamily="monospace" fontWeight="bold">04. PROTOTYPE</text>
+                  <text x="80" y="90" textAnchor="middle" fill="#a1a1aa" fontSize="10">概念原型输出</text>
+                </g>
+
+              </svg>
             </div>
-            <div className="absolute bottom-4 left-4 text-xs font-mono text-zinc-400 uppercase tracking-widest">
+
+            <div className="absolute bottom-4 left-4 text-xs font-mono text-zinc-400 uppercase tracking-widest bg-white/80 px-2 py-1 rounded backdrop-blur-sm">
               Fig 1. Conceptual Massing Generation
             </div>
           </div>
@@ -134,26 +251,38 @@ export default function Home() {
 
               {/* Generated Schemes */}
               <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
-                <div className="border border-zinc-200 rounded-xl p-6 bg-white hover:border-zinc-400 transition-colors cursor-pointer group">
-                  <div className="aspect-video bg-zinc-100 rounded-lg mb-4 flex items-center justify-center p-4">
-                    <div className="grid grid-cols-2 gap-1 w-full h-full opacity-40 group-hover:opacity-60 transition-opacity">
-                      <div className="bg-zinc-900 rounded-sm"></div><div className="bg-zinc-900 rounded-sm"></div>
-                      <div className="bg-zinc-900 rounded-sm"></div><div className="bg-zinc-900 rounded-sm"></div>
+                <Link to="/projects/demo/schemes/A" className="border border-zinc-200 rounded-xl p-6 bg-white hover:border-zinc-400 transition-colors cursor-pointer group block">
+                  <div className="aspect-video bg-zinc-100 rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative">
+                    <div className="relative w-full max-w-[160px] aspect-square">
+                      <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 text-zinc-200" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2">
+                        <rect x="10" y="10" width="80" height="80" />
+                      </svg>
+                      <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 text-zinc-800 drop-shadow-xl transition-transform duration-700 group-hover:scale-105" fill="currentColor">
+                        <path d="M15,15 L85,15 L85,85 L15,85 Z M30,30 L70,30 L70,70 L30,70 Z" fillRule="evenodd" />
+                      </svg>
+                      <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 text-emerald-400/20 transition-transform duration-700 group-hover:scale-105" fill="currentColor">
+                        <rect x="30" y="30" width="40" height="40" />
+                      </svg>
                     </div>
                   </div>
                   <h4 className="font-semibold text-zinc-900 mb-2">Option A: 庭院聚落 (Courtyard)</h4>
                   <p className="text-sm text-zinc-500 line-clamp-2">化整为零，沿周边布置体量，形成内部受保护的安全活动内院，阻隔北侧噪音。</p>
-                </div>
-                <div className="border border-zinc-200 rounded-xl p-6 bg-white hover:border-zinc-400 transition-colors cursor-pointer group">
-                  <div className="aspect-video bg-zinc-100 rounded-lg mb-4 flex items-center justify-center p-4">
-                    <div className="flex flex-col gap-1 w-full h-full opacity-40 group-hover:opacity-60 transition-opacity justify-end">
-                      <div className="bg-zinc-900 h-1/3 rounded-sm w-full"></div>
-                      <div className="bg-zinc-900 h-1/3 rounded-sm w-3/4"></div>
+                </Link>
+                <Link to="/projects/demo/schemes/D" className="border border-zinc-200 rounded-xl p-6 bg-white hover:border-zinc-400 transition-colors cursor-pointer group block">
+                  <div className="aspect-video bg-zinc-100 rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative">
+                    <div className="relative w-full max-w-[160px] aspect-square flex flex-col items-center justify-center gap-2">
+                      <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 text-zinc-200" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2">
+                        <rect x="20" y="10" width="60" height="80" />
+                      </svg>
+                      <div className="w-24 h-6 bg-zinc-800 rounded-sm shadow-lg z-30 relative flex items-center justify-center text-[8px] text-white transition-transform duration-700 group-hover:-translate-y-1">三层：大班区</div>
+                      <div className="w-24 h-6 bg-zinc-700 rounded-sm shadow-lg z-20 relative flex items-center justify-center text-[8px] text-white transition-transform duration-700 group-hover:-translate-y-0.5">二层：中班区</div>
+                      <div className="w-24 h-6 bg-zinc-600 rounded-sm shadow-lg z-10 relative flex items-center justify-center text-[8px] text-white transition-transform duration-700 group-hover:translate-y-0.5">一层：小班区</div>
+                      <div className="w-24 h-6 bg-zinc-200 rounded-sm border-2 border-dashed border-zinc-400 z-0 relative flex items-center justify-center text-[8px] text-zinc-600 transition-transform duration-700 group-hover:translate-y-1">底层架空活动区</div>
                     </div>
                   </div>
-                  <h4 className="font-semibold text-zinc-900 mb-2">Option B: 退台叠落 (Terraces)</h4>
-                  <p className="text-sm text-zinc-500 line-clamp-2">体量集中于北侧作为声屏障，向南侧逐层退台，弥补地面活动场地的不足。</p>
-                </div>
+                  <h4 className="font-semibold text-zinc-900 mb-2">Option B: 垂直分层 (Vertical Layering)</h4>
+                  <p className="text-sm text-zinc-500 line-clamp-2">在用地极其紧张的环境中，通过在垂直维度上叠加不同的功能模块来解决空间需求，底层作为公共活动区，高层作为安静的教学区。</p>
+                </Link>
               </div>
             </div>
           </div>

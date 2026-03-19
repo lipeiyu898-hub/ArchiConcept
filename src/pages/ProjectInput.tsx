@@ -75,12 +75,71 @@ export default function ProjectInput() {
     }
   };
 
+  const [formData, setFormData] = useState({
+    projectName: "",
+    siteShape: "矩形 Rectangular",
+    roadInterfaces: "1面临街 (1 Side)",
+    climate: "温和气候 (Temperate)",
+    noiseLevel: 2,
+    sunlight: 3,
+    ventilation: 2,
+    security: 5,
+    quietness: 3,
+    openness: 4,
+    extraNotes: "",
+  });
+
+  const handleInputChange = (key: string, value: any) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
   const handleGenerate = () => {
     setIsGenerating(true);
     // Simulate API call
     setTimeout(() => {
-      navigate("/projects/new-123/results");
-    }, 2500);
+      const newId = `proj-${Date.now()}`;
+      const newProject = {
+        id: newId,
+        name: formData.projectName || "Untitled Project",
+        type: formData.projectType || "Kindergarten",
+        status: "Generated",
+        created: new Date().toISOString().split('T')[0],
+        updated: "Just now",
+      };
+      
+      const saved = localStorage.getItem('myProjects');
+      let existingProjects = [];
+      if (saved) {
+        try {
+          existingProjects = JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse projects", e);
+        }
+      } else {
+        existingProjects = [
+          {
+            id: "proj-1",
+            name: "Riverside Kindergarten",
+            type: "Kindergarten",
+            status: "Generated",
+            created: "2026-03-10",
+            updated: "2 hours ago",
+          },
+          {
+            id: "proj-2",
+            name: "Urban Infill Early Education",
+            type: "Kindergarten",
+            status: "Draft",
+            created: "2026-03-12",
+            updated: "1 day ago",
+          }
+        ];
+      }
+      
+      localStorage.setItem('myProjects', JSON.stringify([newProject, ...existingProjects]));
+      
+      navigate(`/projects/${newId}/results`, { state: { ...formData, ...switches } });
+    }, 1500);
   };
 
   return (
@@ -137,7 +196,12 @@ export default function ProjectInput() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2.5">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">项目名称 Project Name</label>
-                  <Input placeholder="例如：滨水社区幼儿园" className="h-11" />
+                  <Input 
+                    placeholder="例如：滨水社区幼儿园" 
+                    className="h-11" 
+                    value={formData.projectName}
+                    onChange={(e) => handleInputChange("projectName", e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2.5">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">建筑类型 Building Type</label>
@@ -173,7 +237,13 @@ export default function ProjectInput() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {["矩形 Rectangular", "三角形 Triangular", "不规则 Irregular", "狭长 Linear"].map((shape, i) => (
                     <label key={shape} className="relative flex flex-col items-center justify-center p-4 border border-zinc-200 rounded-lg cursor-pointer hover:bg-zinc-50 transition-colors [&:has(:checked)]:border-zinc-900 [&:has(:checked)]:bg-zinc-50 [&:has(:checked)]:ring-1 [&:has(:checked)]:ring-zinc-900">
-                      <input type="radio" name="shape" className="sr-only" defaultChecked={i === 0} />
+                      <input 
+                        type="radio" 
+                        name="shape" 
+                        className="sr-only" 
+                        checked={formData.siteShape === shape}
+                        onChange={() => handleInputChange("siteShape", shape)}
+                      />
                       <div className="w-12 h-12 mb-3 opacity-60 flex items-center justify-center">
                         {i === 0 && <div className="w-10 h-8 border-2 border-zinc-900"></div>}
                         {i === 1 && <div className="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[34px] border-b-zinc-900"></div>}
@@ -231,7 +301,11 @@ export default function ProjectInput() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2.5">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">道路界面数量 Road Interfaces</label>
-                  <select className="flex h-11 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950">
+                  <select 
+                    className="flex h-11 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950"
+                    value={formData.roadInterfaces}
+                    onChange={(e) => handleInputChange("roadInterfaces", e.target.value)}
+                  >
                     <option>1面临街 (1 Side)</option>
                     <option>2面临街 (2 Sides - Corner)</option>
                     <option>3面临街 (3 Sides)</option>
@@ -286,7 +360,11 @@ export default function ProjectInput() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2.5">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">气候类型 Climate Type</label>
-                  <select className="flex h-11 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950">
+                  <select 
+                    className="flex h-11 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950"
+                    value={formData.climate}
+                    onChange={(e) => handleInputChange("climate", e.target.value)}
+                  >
                     <option>温和气候 (Temperate)</option>
                     <option>夏热冬冷 (Hot Summer, Cold Winter)</option>
                     <option>严寒地区 (Severe Cold)</option>
@@ -303,7 +381,13 @@ export default function ProjectInput() {
                 <div className="space-y-4">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">噪声等级 Noise Level</label>
                   <div className="px-2">
-                    <input type="range" min="1" max="3" defaultValue="2" className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" />
+                    <input 
+                      type="range" 
+                      min="1" max="3" 
+                      value={formData.noiseLevel}
+                      onChange={(e) => handleInputChange("noiseLevel", parseInt(e.target.value))}
+                      className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" 
+                    />
                     <div className="flex justify-between text-xs text-zinc-500 mt-2 font-medium">
                       <span>低 (Quiet)</span>
                       <span>中等 (Moderate)</span>
@@ -315,7 +399,13 @@ export default function ProjectInput() {
                 <div className="space-y-4">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">日照要求 Sunlight Requirement</label>
                   <div className="px-2">
-                    <input type="range" min="1" max="3" defaultValue="3" className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" />
+                    <input 
+                      type="range" 
+                      min="1" max="3" 
+                      value={formData.sunlight}
+                      onChange={(e) => handleInputChange("sunlight", parseInt(e.target.value))}
+                      className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" 
+                    />
                     <div className="flex justify-between text-xs text-zinc-500 mt-2 font-medium">
                       <span>标准 (Standard)</span>
                       <span>较高 (High)</span>
@@ -327,7 +417,13 @@ export default function ProjectInput() {
                 <div className="space-y-4">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-500">通风需求 Ventilation Requirement</label>
                   <div className="px-2">
-                    <input type="range" min="1" max="2" defaultValue="2" className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" />
+                    <input 
+                      type="range" 
+                      min="1" max="2" 
+                      value={formData.ventilation}
+                      onChange={(e) => handleInputChange("ventilation", parseInt(e.target.value))}
+                      className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" 
+                    />
                     <div className="flex justify-between text-xs text-zinc-500 mt-2 font-medium">
                       <span>标准 (Standard)</span>
                       <span>强化穿堂风 (Enhanced Cross-ventilation)</span>
@@ -351,7 +447,12 @@ export default function ProjectInput() {
                       <span className="font-medium text-zinc-700">安全 Security</span>
                       <span className="text-zinc-500 font-mono">High</span>
                     </div>
-                    <input type="range" min="1" max="5" defaultValue="5" className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" />
+                    <input 
+                      type="range" min="1" max="5" 
+                      value={formData.security}
+                      onChange={(e) => handleInputChange("security", parseInt(e.target.value))}
+                      className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" 
+                    />
                   </div>
                   
                   <div className="space-y-3">
@@ -359,7 +460,12 @@ export default function ProjectInput() {
                       <span className="font-medium text-zinc-700">安静 Quietness</span>
                       <span className="text-zinc-500 font-mono">Med</span>
                     </div>
-                    <input type="range" min="1" max="5" defaultValue="3" className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" />
+                    <input 
+                      type="range" min="1" max="5" 
+                      value={formData.quietness}
+                      onChange={(e) => handleInputChange("quietness", parseInt(e.target.value))}
+                      className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" 
+                    />
                   </div>
 
                   <div className="space-y-3">
@@ -367,7 +473,12 @@ export default function ProjectInput() {
                       <span className="font-medium text-zinc-700">开放 Openness</span>
                       <span className="text-zinc-500 font-mono">High</span>
                     </div>
-                    <input type="range" min="1" max="5" defaultValue="4" className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" />
+                    <input 
+                      type="range" min="1" max="5" 
+                      value={formData.openness}
+                      onChange={(e) => handleInputChange("openness", parseInt(e.target.value))}
+                      className="w-full accent-zinc-900 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer" 
+                    />
                   </div>
                 </div>
 
@@ -402,6 +513,8 @@ export default function ProjectInput() {
                 <textarea 
                   className="flex min-h-[200px] w-full rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 leading-relaxed"
                   placeholder="请用自然语言描述其他特殊需求。例如：&#10;“希望建筑外观看起来像一个童话城堡，屋顶可以作为活动场地。一楼需要有一个对社区开放的绘本馆。尽量保留场地西南角的大榕树。”"
+                  value={formData.extraNotes}
+                  onChange={(e) => handleInputChange("extraNotes", e.target.value)}
                 ></textarea>
                 <p className="text-xs text-zinc-500">
                   系统将利用大语言模型解析您的自然语言输入，并将其转化为空间生成策略的权重参数。

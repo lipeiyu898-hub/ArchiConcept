@@ -1,10 +1,11 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Building2, Clock, Copy, Trash2, Edit3, ArrowRight, Zap, FileText, Folder } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const myProjects = [
+const defaultMyProjects = [
   {
     id: "proj-1",
     name: "Riverside Kindergarten",
@@ -43,6 +44,27 @@ const exampleProjects = [
 ];
 
 export default function Dashboard() {
+  const [myProjects, setMyProjects] = useState(defaultMyProjects);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('myProjects');
+    if (saved) {
+      try {
+        setMyProjects(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse projects from localStorage", e);
+      }
+    } else {
+      localStorage.setItem('myProjects', JSON.stringify(defaultMyProjects));
+    }
+  }, []);
+
+  const handleDeleteProject = (id: string) => {
+    const updatedProjects = myProjects.filter(p => p.id !== id);
+    setMyProjects(updatedProjects);
+    localStorage.setItem('myProjects', JSON.stringify(updatedProjects));
+  };
+
   return (
     <div className="space-y-10 pb-10">
       {/* Welcome & Header */}
@@ -110,7 +132,15 @@ export default function Dashboard() {
                     <button className="p-1.5 hover:bg-zinc-100 rounded-md transition-colors" title="Duplicate">
                       <Copy className="w-3.5 h-3.5 text-zinc-600" />
                     </button>
-                    <button className="p-1.5 hover:bg-red-50 rounded-md transition-colors" title="Delete">
+                    <button 
+                      className="p-1.5 hover:bg-red-50 rounded-md transition-colors" 
+                      title="Delete"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDeleteProject(project.id);
+                      }}
+                    >
                       <Trash2 className="w-3.5 h-3.5 text-red-600" />
                     </button>
                   </div>
