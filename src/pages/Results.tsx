@@ -10,7 +10,28 @@ export default function Results() {
   const navigate = useNavigate();
   const inputData = location.state || {};
   
+  // Try to find project name from localStorage if not in state
+  const [projectName, setProjectName] = useState(inputData.projectName || "未命名项目 Untitled Project");
+  
+  useEffect(() => {
+    if (!inputData.projectName && id) {
+      const saved = localStorage.getItem('myProjects');
+      if (saved) {
+        try {
+          const projects = JSON.parse(saved);
+          const project = projects.find((p: any) => p.id === id);
+          if (project) {
+            setProjectName(project.name);
+          }
+        } catch (e) {
+          console.error("Failed to load project name", e);
+        }
+      }
+    }
+  }, [id, inputData.projectName]);
+  
   const [isGenerating, setIsGenerating] = useState(true);
+  const [refreshSeed, setRefreshSeed] = useState(0);
 
   useEffect(() => {
     // Simulate generation time
@@ -18,17 +39,13 @@ export default function Results() {
       setIsGenerating(false);
     }, 1500);
     return () => clearTimeout(timer);
-  }, [location.state]);
+  }, [location.state, refreshSeed]);
 
   const handleRegenerate = () => {
     setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-    }, 1500);
+    setRefreshSeed(prev => prev + 1);
   };
 
-  // Default values if no state is provided
-  const projectName = inputData.projectName || "未命名项目 Untitled Project";
   const siteShape = inputData.siteShape || "矩形 Rectangular";
   const roadInterfaces = inputData.roadInterfaces || "1面临街 (1 Side)";
   const climate = inputData.climate || "温和气候 (Temperate)";
@@ -91,6 +108,17 @@ export default function Results() {
   }
 
   // 4. Score Prototypes (Expanded Pool)
+  // Add a small stable random factor based on project name to vary results
+  const getSeed = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash % 100); // Increased range
+  };
+  const baseSeed = getSeed(projectName);
+  const seed = (baseSeed + refreshSeed * 13) % 100; // Combine with refreshSeed for variation
+
   const allPrototypes = [
     {
       id: "A",
@@ -99,7 +127,7 @@ export default function Results() {
       reason: "最大化隔绝外部干扰，形成绝对安全的内部儿童微型社会。",
       pros: ["噪音控制极佳", "中心庭院安全性高", "空间向心力强"],
       cons: ["外立面可能较封闭", "部分教室朝向受限"],
-      score: 60 + (security >= 4 ? 15 : 0) + (noiseLevel === 3 ? 15 : 0) + (courtyard ? 10 : 0),
+      score: 60 + (security >= 4 ? 15 : 0) + (noiseLevel === 3 ? 15 : 0) + (courtyard ? 10 : 0) + (seed % 15),
       eval: { security: 95, noise: 90, climate: 80, circulation: 85, site: 85 },
       visual: (
         <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
@@ -118,7 +146,7 @@ export default function Results() {
       reason: "顺应场地边界，通过折线体量划分出多个不同尺度的活动院落。",
       pros: ["场地利用率最高", "院落尺度丰富", "采光面大"],
       cons: ["流线较长", "尖角处理难度大"],
-      score: 60 + (siteShape.includes("三角形") || siteShape.includes("不规则") ? 25 : 0) + (roadInterfaces.includes("2") || roadInterfaces.includes("3") ? 15 : 0),
+      score: 60 + (siteShape.includes("三角形") || siteShape.includes("不规则") ? 25 : 0) + (roadInterfaces.includes("2") || roadInterfaces.includes("3") ? 15 : 0) + ((seed + 20) % 15),
       eval: { security: 85, noise: 80, climate: 85, circulation: 75, site: 95 },
       visual: (
         <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
@@ -138,7 +166,7 @@ export default function Results() {
       reason: "将教学单元打散为独立组团，通过宽大的半室外连廊串联，极度适应气候。",
       pros: ["气候适应性极佳", "通风采光好", "半室外空间丰富"],
       cons: ["占地面积大", "边界防护压力大"],
-      score: 60 + (hotRainy ? 20 : 0) + (semiOutdoor ? 15 : 0) + (climate.includes("热带") ? 10 : 0),
+      score: 60 + (hotRainy ? 20 : 0) + (semiOutdoor ? 15 : 0) + (climate.includes("热带") ? 10 : 0) + ((seed + 40) % 15),
       eval: { security: 75, noise: 70, climate: 98, circulation: 90, site: 75 },
       visual: (
         <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
@@ -160,7 +188,7 @@ export default function Results() {
       reason: "在有限的场地内通过垂直维度的功能叠加，释放底层公共空间。",
       pros: ["节约用地", "动静分区明确", "底层开放性好"],
       cons: ["垂直交通压力大", "高层活动受限"],
-      score: 60 + (siteShape.includes("矩形") ? 10 : 0) + (!courtyard ? 15 : 0) + (roadInterfaces.includes("1") ? 10 : 0),
+      score: 60 + (siteShape.includes("矩形") ? 10 : 0) + (!courtyard ? 15 : 0) + (roadInterfaces.includes("1") ? 10 : 0) + ((seed + 10) % 15),
       eval: { security: 80, noise: 75, climate: 70, circulation: 80, site: 90 },
       visual: (
         <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
@@ -189,7 +217,7 @@ export default function Results() {
       reason: "采用紧凑的集中式布局，最大程度减少建筑外表面积，提升保温能效。",
       pros: ["节能效果极佳", "内部流线最短", "造价相对经济"],
       cons: ["内部采光依赖中庭", "体量感较笨重"],
-      score: 60 + (climate.includes("严寒") || climate.includes("冬冷") ? 25 : 0) + (noiseLevel === 3 ? 10 : 0),
+      score: 60 + (climate.includes("严寒") || climate.includes("冬冷") ? 25 : 0) + (noiseLevel === 3 ? 10 : 0) + ((seed + 30) % 15),
       eval: { security: 90, noise: 85, climate: 95, circulation: 95, site: 80 },
       visual: (
         <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
@@ -200,11 +228,66 @@ export default function Results() {
           </svg>
         </div>
       )
+    },
+    {
+      id: "F",
+      name: "L型围合型",
+      type: "L-Shaped Enclosure",
+      reason: "利用L型体量界定出半开放的庭院，平衡了私密性与开放性。",
+      pros: ["空间层次分明", "庭院采光好", "功能分区自然"],
+      cons: ["转角空间利用率低", "视线遮挡较多"],
+      score: 60 + (roadInterfaces.includes("2") ? 15 : 0) + (courtyard ? 10 : 0) + ((seed + 50) % 15),
+      eval: { security: 80, noise: 85, climate: 85, circulation: 80, site: 85 },
+      visual: (
+        <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
+          <svg viewBox="0 0 200 150" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40,30 L40,120 L160,120 L160,90 L70,90 L70,30 Z" fill="#18181b" className="drop-shadow-xl"/>
+            <rect x="80" y="40" width="70" height="40" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="2" opacity="0.6"/>
+          </svg>
+        </div>
+      )
+    },
+    {
+      id: "G",
+      name: "双翼展开型",
+      type: "Winged Layout",
+      reason: "通过两个斜向展开的翼楼，最大化争取南向采光与通风。",
+      pros: ["采光面极大", "造型动感", "视野开阔"],
+      cons: ["结构跨度大", "流线交汇点拥挤"],
+      score: 60 + (climate.includes("温和") ? 15 : 0) + (semiOutdoor ? 10 : 0) + ((seed + 60) % 15),
+      eval: { security: 70, noise: 75, climate: 90, circulation: 85, site: 80 },
+      visual: (
+        <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
+          <svg viewBox="0 0 200 150" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100,75 L40,40 L40,110 L100,145 L160,110 L160,40 Z" fill="#18181b" className="drop-shadow-xl"/>
+            <path d="M100,75 L40,40 L40,110 L100,145 L160,110 L160,40 Z" fill="#18181b"/>
+            <circle cx="100" cy="95" r="15" fill="#f4f4f5" opacity="0.8"/>
+          </svg>
+        </div>
+      )
+    },
+    {
+      id: "H",
+      name: "螺旋上升型",
+      type: "Spiral Upward",
+      reason: "通过螺旋上升的体量，创造出连续的室外活动平台，增加趣味性。",
+      pros: ["趣味性极强", "室外活动空间丰富", "造型独特"],
+      cons: ["结构复杂", "无障碍设计难度大"],
+      score: 60 + (semiOutdoor ? 15 : 0) + (siteShape.includes("不规则") ? 10 : 0) + ((seed + 70) % 15),
+      eval: { security: 75, noise: 70, climate: 85, circulation: 70, site: 80 },
+      visual: (
+        <div className="w-full h-full relative flex items-center justify-center bg-zinc-50/50">
+          <svg viewBox="0 0 200 150" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40,120 L160,120 L160,90 L70,90 L70,60 L130,60 L130,30 L40,30 Z" fill="#18181b" className="drop-shadow-xl"/>
+            <path d="M160,120 L160,90 L70,90" stroke="#22c55e" strokeWidth="4" opacity="0.6"/>
+          </svg>
+        </div>
+      )
     }
   ];
 
   // Select top 3 prototypes
-  const prototypes = allPrototypes.sort((a, b) => b.score - a.score).slice(0, 3);
+  const prototypes = [...allPrototypes].sort((a, b) => b.score - a.score).slice(0, 3);
 
   // 5. Generate Dynamic Explanation Text
   const requirements = [];
@@ -249,26 +332,28 @@ export default function Results() {
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12">
       {/* Page Header & Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm sticky top-0 z-40">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-xl border border-zinc-200 shadow-sm sticky top-0 z-40">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
             <Link to="/dashboard" className="hover:text-zinc-900 transition-colors">Dashboard</Link>
-            <span>/</span>
+            <span className="text-zinc-300">/</span>
             <span>概念推演报告 Conceptual Report</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900">{projectName}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 leading-tight">
+            {projectName}
+          </h1>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" asChild className="bg-white">
+        <div className="grid grid-cols-2 gap-2 shrink-0">
+          <Button variant="outline" size="sm" asChild className="bg-white justify-start">
             <Link to="/projects/new"><ArrowLeft className="w-4 h-4 mr-2" /> 返回编辑 Edit</Link>
           </Button>
-          <Button variant="outline" size="sm" className="bg-white" onClick={handleRegenerate}>
+          <Button variant="outline" size="sm" className="bg-white justify-start" onClick={handleRegenerate}>
             <RefreshCw className="w-4 h-4 mr-2" /> 重新生成 Regenerate
           </Button>
-          <Button variant="outline" size="sm" className="bg-white">
+          <Button variant="outline" size="sm" className="bg-white justify-start">
             <Bookmark className="w-4 h-4 mr-2" /> 收藏 Save
           </Button>
-          <Button size="sm" className="bg-zinc-900 text-white hover:bg-zinc-800">
+          <Button size="sm" className="bg-zinc-900 text-white hover:bg-zinc-800 justify-start">
             <Download className="w-4 h-4 mr-2" /> 导出 PDF Export
           </Button>
         </div>
@@ -416,7 +501,7 @@ export default function Results() {
               
               <div className="p-4 bg-zinc-50 border-t border-zinc-100">
                 <Button className="w-full bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-100" asChild>
-                  <Link to={`/projects/${id || 'new-123'}/schemes/${option.id}`} state={{ formData: inputData }}>
+                  <Link to={`/projects/${id || 'new-123'}/schemes/${option.id}`} state={{ formData: { ...inputData, projectName } }}>
                     查看详情 View Details <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>

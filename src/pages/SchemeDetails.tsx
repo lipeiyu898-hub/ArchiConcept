@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -239,7 +240,24 @@ export default function SchemeDetails() {
   const { id, schemeId } = useParams();
   const location = useLocation();
   const { formData } = location.state || { formData: {} };
-  const projectName = formData.projectName || "未命名项目 Untitled Project";
+  const [projectName, setProjectName] = useState(formData.projectName || "未命名项目 Untitled Project");
+
+  useEffect(() => {
+    if (!formData.projectName && id) {
+      const saved = localStorage.getItem('myProjects');
+      if (saved) {
+        try {
+          const projects = JSON.parse(saved);
+          const project = projects.find((p: any) => p.id === id);
+          if (project) {
+            setProjectName(project.name);
+          }
+        } catch (e) {
+          console.error("Failed to load project name", e);
+        }
+      }
+    }
+  }, [id, formData.projectName]);
   
   const scheme = schemeData[schemeId || "A"] || schemeData["A"];
 

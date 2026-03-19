@@ -147,7 +147,11 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="space-y-1 mb-6 flex-1">
-                  <Link to={`/projects/${project.id}/results`} className="hover:underline decoration-zinc-300 underline-offset-4">
+                  <Link 
+                    to={`/projects/${project.id}/results`} 
+                    state={{ projectName: project.name }}
+                    className="hover:underline decoration-zinc-300 underline-offset-4"
+                  >
                     <h3 className="font-semibold text-zinc-900 text-base leading-tight">{project.name}</h3>
                   </Link>
                   <div className="flex items-center text-sm text-zinc-500 gap-1.5">
@@ -172,7 +176,10 @@ export default function Dashboard() {
               {/* Action Footer */}
               <div className="px-5 py-3 bg-zinc-50 border-t border-zinc-100 rounded-b-xl flex justify-end">
                 <Button variant="ghost" size="sm" className="h-8 text-xs font-medium text-zinc-600 hover:text-zinc-900" asChild>
-                  <Link to={`/projects/${project.id}/${project.status === 'Generated' ? 'results' : 'new'}`}>
+                  <Link 
+                    to={`/projects/${project.id}/${project.status === 'Generated' ? 'results' : 'new'}`}
+                    state={{ projectName: project.name }}
+                  >
                     {project.status === "Generated" ? "View Results" : "Continue Editing"} <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                   </Link>
                 </Button>
